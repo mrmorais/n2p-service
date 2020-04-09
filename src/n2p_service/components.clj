@@ -24,8 +24,8 @@
 (defn base []
   (component/system-map
    :config (config/new-config base-config-map)
-   :routes (routes/new-routes n2p-service.service/routes)
-  ; :rabbit-mq (component/using (rabbit-mq/new-rabbit-mq) [:config])
+   :routes (routes/new-routes #'n2p-service.service/routes)
+   :rabbit-mq (component/using (rabbit-mq/new-rabbit-mq) [:config])
    :service (component/using (service/new-service) web-app-deps)
    :servlet (component/using (servlet/new-servlet) [:service])))
 

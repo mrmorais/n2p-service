@@ -19,7 +19,7 @@
 (defn base-service [routes port]
   {:env :prod
    ::bootstrap/router :prefix-tree
-   ::bootstrap/routes #(route/expand-routes routes)
+   ::bootstrap/routes #(route/expand-routes @routes)
    ::bootstrap/resource-path "/public"
    ::bootstrap/type :jetty
    ::bootstrap/port port})
