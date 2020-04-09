@@ -1,5 +1,6 @@
 (ns n2p-service.controllers.record
   (:require [n2p-service.db :as db]
+            [n2p-service.protocols.mq-broker :as mq-broker]
             [ring.util.response :as ring-resp]
             [schema.core :as schema]
             [langohr.core :as mq]
@@ -48,9 +49,11 @@
 
 ;; (publish-record-create! {:oi "oi"})
 
-(defn create-record! [request]
+(defn create-record! [{{:keys [rabbit-mq]} :components
+                       :as request}]
   (let [record-req (schema/validate record-req-schema (:json-params request))
         record (record-request->record-item record-req)]
     (db/put-item! record-table-definition record)
+    (mq-broker/publish rabbit-mq "n2p.service.records.create" (json/write-str record))
     (publish-record-create! record)
     (ring-resp/created (str "/record/" (:id record)) record)))

@@ -39,7 +39,7 @@
    (fn [context]
      (-> context
          (assoc-in [:response :body] (json/write-str (get-in context [:response :body])))
-         (assoc-in [:response :headers "Content-Type"] "text/json")))
+         (assoc-in [:response :headers "Content-Type"] "application/json")))
    })
 
 (def common-interceptors [
@@ -51,8 +51,7 @@
 
 ;; Tabular routes
 (def routes #{["/" :get (conj common-interceptors `home-page)]
-              ;["/about" :get (conj common-interceptors `about-page)]
-              ;["/user" :post (conj common-interceptors `user-ctlr/create-user!)]
-              ;["/user/:id" :get (conj common-interceptors `user-ctlr/get-user)]
-              ;["/record" :post (conj common-interceptors `record-ctlr/create-record!)]
+              ["/user" :post (conj common-interceptors `user-ctlr/create-user!)]
+              ["/user/:id" :get (conj common-interceptors `user-ctlr/get-user)]
+              ["/record" :post (conj common-interceptors `record-ctlr/create-record!)]
               })

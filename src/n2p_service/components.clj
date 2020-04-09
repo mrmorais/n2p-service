@@ -19,7 +19,7 @@
 
 ;; all the components that will be available in the pedestal http request map
 (def web-app-deps
-  [:config :routes])
+  [:config :routes :rabbit-mq])
 
 (defn base []
   (component/system-map

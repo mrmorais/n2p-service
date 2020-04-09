@@ -4,6 +4,7 @@
             [langohr.basic :as mq-basic]
             [langohr.channel :as mq-channel]
             [langohr.queue :as mq-queue]
+            [langohr.consumers :as mq-consumers]
             [clojure.data.json :as json]
             [io.pedestal.log :as log]
             [n2p-service.protocols.mq-broker :as mq-broker])
@@ -29,10 +30,15 @@
   (publish
     [this queue_name content]
     (let [conn (:mq-connection this)
-          channel (mq-channel/open conn)
-          ]
+          channel (mq-channel/open conn)]
       (mq-queue/declare channel queue_name {:exclusive false :auto-delete false})
       (mq-basic/publish channel "" queue_name content {:content-type "application/json"})
-      (mq-channel/close channel))))
+      (mq-channel/close channel)))
+  (consume
+    [this queue_name handler]
+    (let [conn (:mq-connection this)
+          channel (mq-channel/open conn)
+          consumer (mq-consumers/create-default channel {:handle-delivery-fn handler})]
+      (mq-basic/consume channel queue_name consumer))))
 
 (defn new-rabbit-mq [] (map->RabbitMQ {}))
