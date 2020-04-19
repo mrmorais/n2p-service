@@ -7,25 +7,33 @@
             [n2p-service.components.system-utils :as system-utils]
             [n2p-service.components.routes :as routes]
             [n2p-service.components.rabbit-mq :as rabbit-mq]
+            [n2p-service.components.dynamo-db :as dynamo-db]
             [schema.core :as s]))
 
-(def base-config-map {:environment :prod
+(def base-config-map {:environment :dev
                       :dev-port 8080
-                      :rabbit-mq-uri "amqp://guest:guest@192.168.99.100"})
+                      :rabbit-mq-uri "amqp://guest:guest@192.168.99.100"
+                      :aws-access-key "fake-access-key"
+                      :aws-secret-key "fake-secret-key"
+                      :aws-endpoint "http://localhost:8000"})
 
 (def local-config-map {:environment :dev
                        :dev-port 8080
-                       :rabbit-mq-uri "amqp://guest:guest@192.168.99.100"})
+                       :rabbit-mq-uri "amqp://guest:guest@192.168.99.100"
+                       :aws-access-key "fake-access-key"
+                       :aws-secret-key "fake-secret-key"
+                       :aws-endpoint "http://localhost:8000"})
 
 ;; all the components that will be available in the pedestal http request map
 (def web-app-deps
-  [:config :routes :rabbit-mq])
+  [:config :routes :rabbit-mq :dynamo-db])
 
 (defn base []
   (component/system-map
    :config (config/new-config base-config-map)
    :routes (routes/new-routes #'n2p-service.service/routes)
    :rabbit-mq (component/using (rabbit-mq/new-rabbit-mq) [:config])
+   :dynamo-db (component/using (dynamo-db/new-dynamo-db) [:config])
    :service (component/using (service/new-service) web-app-deps)
    :servlet (component/using (servlet/new-servlet) [:service])))
 

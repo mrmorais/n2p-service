@@ -5,8 +5,10 @@
             [io.pedestal.interceptor.error :as error-int]
             [ring.util.response :as ring-resp]
             [clojure.data.json :as json]
-            [n2p-service.controllers.user :as user-ctlr]
-            [n2p-service.controllers.record :as record-ctlr]))
+            [n2p-service.controllers.record :as record-ctlr]
+            [n2p-service.controllers.project :as project-ctlr]
+            [n2p-service.controllers.content :as content-ctlr]
+            [n2p-service.controllers.episode :as episode-ctlr]))
 
 (defn home-page
   [request]
@@ -51,7 +53,13 @@
 
 ;; Tabular routes
 (def routes #{["/" :get (conj common-interceptors `home-page)]
-              ["/user" :post (conj common-interceptors `user-ctlr/create-user!)]
-              ["/user/:id" :get (conj common-interceptors `user-ctlr/get-user)]
-              ["/record" :post (conj common-interceptors `record-ctlr/create-record!)]
-              })
+              ["/project" :post (conj common-interceptors `project-ctlr/create-project!)]
+              ["/project/:project-id" :get (conj common-interceptors `project-ctlr/get-project)]
+              ["/project/:project-id/content" :post (conj common-interceptors `content-ctlr/push-content!)]
+              ["/project/:project-id/content" :get (conj common-interceptors `content-ctlr/get-all-content)]
+              ["/project/:project-id/content/:content-id" :get (conj common-interceptors `content-ctlr/get-content)]
+              ["/project/:project-id/content/:content-id" :put (conj common-interceptors `content-ctlr/update-content!)]
+              ["/project/:project-id/episode" :get (conj common-interceptors `episode-ctlr/get-current-episode)]
+              ["/project/:project-id/episode/content" :put (conj common-interceptors `episode-ctlr/put-content!)]
+              ["/project/:project-id/episode/record" :post (conj common-interceptors `episode-ctlr/create-record!)]
+              ["/project/:project-id/episode/record" :get (conj common-interceptors `episode-ctlr/get-all-records)]})
